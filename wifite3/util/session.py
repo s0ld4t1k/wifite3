@@ -496,28 +496,17 @@ class SessionManager:
         """
         try:
             stat_info = os.stat(session_path)
-            mode = stat_info.st_mode & 0o777
-            
-            # Check if file is readable by others (world-readable)
-            if mode & 0o004:
-                raise PermissionError(
-                    f"Session file has insecure permissions ({oct(mode)}). "
-                    "File should not be world-readable. "
-                    f"Run: chmod 600 {session_path}"
-                )
-            
-            # Check if file is readable by group
-            if mode & 0o040:
-                # Warning only, not critical
-                import warnings
-                warnings.warn(
-                    f"Session file has group-readable permissions ({oct(mode)}). "
-                    f"Consider running: chmod 600 {session_path}",
-                    UserWarning
-                )
-        except OSError:
-            # If we can't check permissions, continue anyway
-            pass
+        except OSError as exc:
+            raise PermissionError(f"Cannot verify session file permissions: {exc}") from exc
+
+        mode = stat_info.st_mode & 0o777
+        # Session data can contain recovered or captured credentials.
+        if mode & 0o077:
+            raise PermissionError(
+                f"Session file has insecure permissions ({oct(mode)}). "
+                "File must not be accessible by group or others. "
+                f"Run: chmod 600 {session_path}"
+            )
     
     def _validate_session_data(self, data: dict[str, Any], session_id: str) -> None:
         """

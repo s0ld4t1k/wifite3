@@ -3,7 +3,7 @@
 ## TL;DR
 
 ```bash
-git clone <repo> wifite3
+git clone https://github.com/s0ld4t1k/wifite3.git wifite3
 cd wifite3
 chmod +x install.sh
 ./install.sh
@@ -69,8 +69,20 @@ Python и не привязывая запуск `sudo` к окружению п
 
 ## Разработка
 
+На Linux установщик может подготовить dev-окружение:
+
 ```bash
 ./install.sh --dev
+.venv/bin/wifite3 --demo
+.venv/bin/pytest
+```
+
+На macOS `install.sh` не используется (он устанавливает Linux-системные
+зависимости); создайте виртуальное окружение напрямую:
+
+```bash
+python3 -m venv .venv
+.venv/bin/python -m pip install -e '.[dev]'
 .venv/bin/wifite3 --demo
 .venv/bin/pytest
 ```

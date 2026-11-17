@@ -80,6 +80,7 @@ class Logger:
                 # Write header — open with explicit 0o600 so the log file
                 # is owner-readable only, regardless of the process umask.
                 fd = os.open(log_file, os.O_WRONLY | os.O_CREAT | os.O_APPEND, 0o600)
+                os.fchmod(fd, 0o600)
                 with os.fdopen(fd, 'a') as f:
                     f.write(f"\n{'='*80}\n")
                     f.write(f"Wifite3 Log - {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")

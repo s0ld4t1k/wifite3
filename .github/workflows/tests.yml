@@ -34,3 +34,39 @@ jobs:
           wifite3 --help
           python -c "from wifite3.util.paths import find_data_file, wordlist_paths; assert find_data_file('ieee-oui.txt'); assert wordlist_paths()"
           python -c "from wifite3.tui.app import Wifite3App; print('tui import ok')"
+
+  macos:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Install and test (no radio required)
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e '.[dev]'
+          python -m pytest -q
+          wifite3 --version
+          wifite3 --help
+
+  wheel:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Build and install wheel
+        run: |
+          python -m pip install --upgrade pip build
+          python -m build --wheel
+          python -m pip uninstall -y wifite3
+          python -m pip install dist/*.whl
+      - name: Check installed package and portal assets
+        run: |
+          wifite3 --version
+          wifite3 --help
+          python -c "from pathlib import Path; import wifite3.attack.portal.templates as p; root = Path(p.__file__).parent; assert (root / 'templates' / 'generic_login.html').is_file(); assert (root / 'static' / 'style.css').is_file()"

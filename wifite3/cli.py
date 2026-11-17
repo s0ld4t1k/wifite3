@@ -31,7 +31,7 @@ USAGE
   sudo wifite3                     open the TUI (recommended)
   sudo wifite3 --interface wlan0   preselect an adapter
   sudo wifite3 --classic [flags]   classic Wifite2 console mode
-  wifite3 --doctor                 check host, drivers and tools
+  wifite3 --doctor                 check host, drivers and tools (Linux-only readiness)
   wifite3 --demo                   explore the TUI without a radio
   wifite3 --classic --help         every engine flag (full Wifite2 docs)
 

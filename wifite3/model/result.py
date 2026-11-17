@@ -6,6 +6,8 @@ from ..config import Configuration
 
 import os
 import re
+import stat
+import tempfile
 import time
 from json import loads, dumps
 
@@ -41,7 +43,7 @@ class CrackResult:
 
     def save(self):
         """ Adds this crack result to the cracked file and saves it. """
-        name = CrackResult.cracked_file
+        name = CrackResult.cracked_file or Configuration.cracked_file
         saved_results = []
         if os.path.exists(name):
             with open(name) as fid:
@@ -67,8 +69,23 @@ class CrackResult:
                 return
 
         saved_results.append(self.to_dict())
-        with open(name, 'w') as fid:
-            fid.write(dumps(saved_results, indent=2))
+        result_dir = os.path.dirname(os.path.abspath(name))
+        os.makedirs(result_dir, mode=0o700, exist_ok=True)
+        temp_fd, temp_path = tempfile.mkstemp(prefix='.cracked_', suffix='.tmp', dir=result_dir)
+        try:
+            os.fchmod(temp_fd, stat.S_IRUSR | stat.S_IWUSR)
+            with os.fdopen(temp_fd, 'w') as fid:
+                temp_fd = -1
+                fid.write(dumps(saved_results, indent=2))
+            os.replace(temp_path, name)
+        except Exception:
+            if temp_fd >= 0:
+                os.close(temp_fd)
+            try:
+                os.unlink(temp_path)
+            except OSError:
+                pass
+            raise
         Color.pl('{+} saved result to {C}%s{W} ({G}%d total{W})'
                  % (name, len(saved_results)))
 

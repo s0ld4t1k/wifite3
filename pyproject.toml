@@ -46,7 +46,7 @@ wifite3-classic = "wifite3.cli:classic_main"
 include = ["wifite3*"]
 
 [tool.setuptools.package-data]
-wifite3 = ["data/*.txt", "data/wordlists/*.txt", "tui/*.tcss"]
+wifite3 = ["data/*.txt", "data/wordlists/*.txt", "tui/*.tcss", "attack/portal/templates/*.html", "attack/portal/static/*.css"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

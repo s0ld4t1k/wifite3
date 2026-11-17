@@ -49,6 +49,7 @@ class TUILogger:
             # Create/clear log file with restricted permissions (owner read/write only)
             try:
                 fd = os.open(cls._log_file, os.O_WRONLY | os.O_CREAT | os.O_TRUNC, stat.S_IRUSR | stat.S_IWUSR)
+                os.fchmod(fd, stat.S_IRUSR | stat.S_IWUSR)
                 with os.fdopen(fd, 'w') as f:
                     f.write(f"=== Wifite TUI Log Started: {datetime.now()} ===\n")
             except (OSError, ValueError):

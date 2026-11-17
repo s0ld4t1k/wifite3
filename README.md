@@ -1,21 +1,21 @@
 # Wifite3
 
-**Современный TUI-аудитор Wi-Fi для Linux.** Внутри — весь боевой движок
+**Современный TUI-аудитор Wi-Fi для Linux.** Внутри — движок
 [Wifite2](https://github.com/kimocoder/wifite2) (WPA/WPA2/WPA3, PMKID, WPS,
-WEP, OWE, Evil Twin, dual-interface), снаружи — нормальный интерфейс, который
-не рассыпается при установке.
+WEP, OWE, Evil Twin, dual-interface), снаружи — удобный интерфейс и установка
+без изменений системного Python.
 
 > ⚠️ **Только для своих сетей.** Используйте Wifite3 только на сетях, которыми
 > владеете или на тестирование которых есть письменное разрешение.
 > Несанкционированный перехват трафика незаконен.
 
 ```
-  ██╗    ██╗██╗███████╗██╗████████╗███████╗██████╗
-  ██║    ██║██║██╔════╝██║╚══██╔══╝██╔════╝╚════██╗
-  ██║ █╗ ██║██║█████╗  ██║   ██║   █████╗    █████╔╝
-  ██║███╗██║██║██╔══╝  ██║   ██║   ██╔══╝   ██╔═══╝
-  ╚███╔███╔╝██║██║     ██║   ██║   ███████╗███████╗
-   ╚══╝╚══╝ ╚═╝╚═╝     ╚═╝   ╚═╝   ╚══════╝╚══════╝
+  ██╗    ██╗██╗███████╗██╗████████╗███████╗██████╗      ██████╗
+  ██║    ██║██║██╔════╝██║╚══██╔══╝╔════╝╚════██╗    ╚════██║
+  ██║ █╗ ██║██║█████╗  ██║   ██║   █████╗    █████╔╝      █████╔╝
+  ██║███╗██║██║██╔══╝   ██║   ██║   ██╔══╝   ██╔═══╝      ╚════██║
+  ╚███╔███╔╝██║██╔══╝   ██║   ██║   ███████╗██████╗      ██████╔╝
+   ╚══╝╚══╝  ╚═╝ ╚═════╝╚═╝   ╚═╝   ╚══════╝╚══════╝     ╚═════╝
 ```
 
 ## Скриншоты
@@ -30,51 +30,54 @@ WEP, OWE, Evil Twin, dual-interface), снаружи — нормальный и
 
 ## Что уже есть
 
-- **Полный движок Wifite2** — 50k+ строк атакующих модулей скопированы в
-  `wifite3/` и работают как раньше. Ничего не выброшено.
-- **Новый Textual TUI** — таблица сетей с сортировкой и фильтром, выбор
-  целей с клавиатуры, live-лог атаки, панель деталей, progress bar.
-- **Живой ввод** — если движок спрашивает (`wordlist`, подтверждение), в TUI
-  открывается модальное окно, а не ломается экран.
-- **Кнопка Stop** — останавливает атаку через событие + `KeyboardInterrupt`
-  в рабочем потоке и убивает дочерние процессы.
-- **`--doctor`** — проверяет Linux, root, драйверы, адаптеры, monitor mode,
-  `rfkill`, NetworkManager, Python-зависимости, wordlist, OUI-базу.
-- **Установка без боли** — `install.sh` сам определяет Fedora / Ubuntu /
-  Debian / Arch / openSUSE и ставит пакеты; Python-часть ставится в root-owned
-  venv под `/opt/wifite3`, а не в системный Python или user-owned `pipx` (PEP 668).
-- **`--demo`** — весь интерфейс и симуляция атаки без Wi-Fi карты. Работает
-  даже на macOS — удобно для разработки и скриншотов.
-- **`--classic`** — старый консольный режим Wifite2 со всеми флагами.
+- **Движок Wifite2** — WPA/WPA2/WPA3, PMKID, WPS, WEP, OWE, Evil Twin и
+  dual-interface. Оригинальные компоненты и лицензия указаны в [NOTICE](NOTICE).
+- **Textual TUI** — таблица сетей с сортировкой и фильтром, выбор целей,
+  live-лог атаки, панель деталей и progress bar.
+- **Живой ввод** — запросы движка (`wordlist`, подтверждение) открываются
+  в модальном окне.
+- **Остановка атаки** — Stop отправляет событие остановки, прерывает worker
+  и завершает дочерние процессы.
+- **`--doctor`** — диагностика Linux, root, адаптеров, monitor mode,
+  `rfkill`, инструментов и данных.
+- **Безопасная установка** — `install.sh` определяет Fedora / Ubuntu / Debian /
+  Arch / openSUSE и ставит Python-приложение в изолированный root-owned venv
+  `/opt/wifite3` (PEP 668).
+- **`--demo`** — интерфейс и симуляция без Wi-Fi-карты; работает также на macOS.
+- **`--classic`** — классический консольный режим Wifite2 со старыми флагами.
 
 ## Быстрый старт (Fedora)
 
 ```bash
-git clone <repo> wifite3 && cd wifite3
+git clone https://github.com/s0ld4t1k/wifite3.git
+cd wifite3
 ./install.sh
 
 sudo wifite3            # TUI
 wifite3 --demo          # посмотреть интерфейс без карты
-sudo wifite3 --doctor   # что не так с системой
+sudo wifite3 --doctor   # готовность Linux (на macOS — только диагностика)
 ```
 
-`install.sh` ставит приложение в `/opt/wifite3/venv` и создаёт ссылку
+Установщик помещает приложение в `/opt/wifite3/venv` и создаёт
 `/usr/local/bin/wifite3`. Окружение принадлежит root, поэтому пользователь
-не сможет подменить код, запускаемый затем через `sudo`.
+не сможет подменить код, который затем запускается через `sudo`.
 
-Вручную, если не хотите скрипт:
+### Установка вручную на Fedora
 
 ```bash
 sudo dnf install -y aircrack-ng iw iproute wireless-regdb \
   usbutils pciutils rfkill wpa_supplicant
 sudo dnf install -y hashcat hcxdumptool hcxtools wireshark-cli \
   macchanger hostapd dnsmasq john cowpatty || true
-# reaver/bully для WPS могут быть в RPM Fusion
+# reaver/bully для WPS могут находиться в RPM Fusion
 
 python3 -m venv .venv
-.venv/bin/pip install -e .
-sudo .venv/bin/wifite3
+.venv/bin/pip install -e '.[dev]'
+.venv/bin/wifite3 --demo
 ```
+
+Ручное venv предназначено для разработки и demo. Для реальной работы под root
+предпочтительно использовать `./install.sh`, который ставит код в `/opt`.
 
 ## Управление
 
@@ -97,48 +100,32 @@ sudo .venv/bin/wifite3
 ## Установка на другие дистрибутивы
 
 ```bash
-# Debian / Ubuntu / Kali
-sudo apt update
-sudo apt install -y aircrack-ng iw iproute2 wireless-regdb usbutils \
-  pciutils rfkill wpasupplicant hashcat hcxdumptool hcxtools tshark \
-  macchanger hostapd dnsmasq john cowpatty reaver bully
-
-# Arch
-sudo pacman -S --needed aircrack-ng iw iproute2 wireless-regdb usbutils \
-  pciutils rfkill wpa_supplicant hashcat hcxdumptool hcxtools wireshark-cli \
-  macchanger hostapd dnsmasq john cowpatty reaver bully
+# Debian / Ubuntu / Kali / Arch / Manjaro / openSUSE / Alpine
+./install.sh
 ```
 
-`reaver`, `bully`, `bettercap` и часть WPS-инструментов могут отсутствовать в
-официальных репозиториях — это не блокирует сканирование и WPA-атаки.
-`--doctor` покажет точный список того, чего не хватает.
+Пакет `reaver`, `bully`, `bettercap` и некоторые WPS-инструменты могут
+отсутствовать в официальных репозиториях. Сканирование и остальные режимы
+при этом не обязательно блокируются; `--doctor` покажет недостающие команды.
 
 ## Почему установка проще, чем у Wifite2
 
 Типичные грабли Fedora:
 
-1. **PEP 668** — `pip install` в системный Python запрещён. Wifite3 ставится
-   в изолированный `/opt/wifite3/venv`, зависимости — через `dnf`.
-2. **Пакет `wifite2` уже занят** — Python-пакет Wifite3 называется `wifite3`,
-   поэтому конфликта импортов и `egg-info` нет.
-3. **Нет `airodump-ng` / `iw` / `wireless-regdb`** — `install.sh` ставит их
-   первыми, а `--doctor` объясняет, что именно отсутствует.
-4. **Скрипт запускается не из папки репозитория** — OUI-база и wordlist
-   ищутся через `importlib.resources`, а не относительно текущей директории.
-5. **Сломанный терминал** — при отсутствии TTY автоматически включается
-   классический режим; TUI можно отключить через `--classic`.
+1. **PEP 668** — системный Python не используется для установки приложения.
+   Wifite3 ставится в изолированный `/opt/wifite3/venv`, зависимости — через `dnf`.
+2. **Имя пакета** — Python-пакет называется `wifite3`, поэтому не конфликтует
+   с установленным `wifite2`.
+3. **Системные инструменты** — `install.sh` ставит основной toolchain, а
+   `--doctor` объясняет, чего не хватает.
+4. **Пути к данным** — OUI-база и wordlist входят в пакет и доступны вне папки
+   репозитория.
+5. **Терминал** — без интерактивного TTY программа переключается в classic;
+   `--classic` можно указать явно.
 
 ## Документация
 
 - [docs/INSTALL.md](docs/INSTALL.md) — установка и решение проблем.
-- [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) — как устроен проект.
-- [docs/ROADMAP.md](docs/ROADMAP.md) — что дальше.
-
-## Статус
-
-Ранняя альфа (`0.1.0`). Движок Wifite2 стабилен; новый TUI активно
-обкатывается. Присылайте логи из `--doctor --deep` и вывод `--classic -v`.
-
-## Лицензия
-
-GPL-2.0-only, как и Wifite2. См. [LICENSE](LICENSE) и [NOTICE](NOTICE).
+- [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) — устройство проекта.
+- [docs/ROADMAP.md](docs/ROADMAP.md) — план развития.
+- [NOTICE](NOTICE) — происхождение движка и атрибуция.
