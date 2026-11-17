@@ -1,0 +1,53 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "wifite3"
+version = "0.1.0"
+description = "Modern TUI wireless network auditor for Linux, built on the Wifite2 engine"
+readme = "README.md"
+license = "GPL-2.0-only"
+license-files = ["LICENSE"]
+authors = [
+    {name = "Wifite3 contributors"},
+]
+requires-python = ">=3.10"
+keywords = ["wifi", "wireless", "security", "auditing", "penetration-testing", "aircrack-ng", "tui"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Operating System :: POSIX :: Linux",
+    "Topic :: Security",
+    "Environment :: Console",
+]
+dependencies = [
+    "chardet>=5.0",
+    "requests>=2.28",
+    "rich>=13.7",
+    "textual>=0.80,<9",
+    "scapy>=2.5; python_version < '4'",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0",
+    "pytest-asyncio>=0.23",
+]
+
+[project.scripts]
+wifite3 = "wifite3.cli:main"
+wifite3-classic = "wifite3.cli:classic_main"
+
+[tool.setuptools.packages.find]
+include = ["wifite3*"]
+
+[tool.setuptools.package-data]
+wifite3 = ["data/*.txt", "data/wordlists/*.txt", "tui/*.tcss"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"

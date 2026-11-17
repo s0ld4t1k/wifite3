@@ -1,0 +1,408 @@
+/* Wifite3 — dark terminal theme */
+
+Screen {
+    background: #080c12;
+    color: #d6e2ef;
+}
+
+Header {
+    background: #0d1620;
+    color: #7ee7ff;
+    text-style: bold;
+}
+
+Header > .header--title {
+    color: #7ee7ff;
+}
+
+Footer {
+    background: #0d1620;
+    color: #7f93a8;
+}
+
+Footer > .footer--key {
+    background: #13202d;
+    color: #8be9fd;
+}
+
+Footer > .footer--description {
+    color: #9fb2c5;
+}
+
+#body {
+    height: 1fr;
+}
+
+#sidebar {
+    width: 38;
+    min-width: 32;
+    max-width: 44;
+    height: 1fr;
+    background: #0b131c;
+    border-right: solid #1b2b3a;
+    padding: 0 1;
+}
+
+#sidebar-scroll {
+    height: 1fr;
+    scrollbar-size-vertical: 1;
+}
+
+#sidebar-actions {
+    height: auto;
+    dock: bottom;
+    background: #0b131c;
+    border-top: solid #1b2b3a;
+    padding-top: 1;
+}
+
+#logo {
+    color: #7ee7ff;
+    text-style: bold;
+    padding-top: 1;
+    height: 2;
+}
+
+#tagline {
+    color: #54687c;
+    height: 2;
+    margin-bottom: 1;
+}
+
+.section-title {
+    color: #4db6d6;
+    text-style: bold;
+    margin-top: 1;
+    margin-bottom: 0;
+    height: 1;
+}
+
+.field-label {
+    color: #7890a6;
+    margin-top: 1;
+    height: 1;
+}
+
+.hint {
+    color: #5f7387;
+    height: auto;
+    margin-bottom: 1;
+}
+
+#adapter-info {
+    color: #9fb2c5;
+    height: auto;
+    padding: 1 0;
+}
+
+#status {
+    color: #7890a6;
+    height: auto;
+    min-height: 2;
+    padding-top: 1;
+    border-top: dashed #1b2b3a;
+    margin-top: 1;
+}
+
+#main {
+    width: 1fr;
+    height: 1fr;
+    padding: 0 1;
+}
+
+#stats {
+    height: 3;
+    background: #0d1620;
+    color: #d6e2ef;
+    padding: 0 1;
+    border: solid #1b2b3a;
+    margin-bottom: 0;
+}
+
+#toolbar {
+    height: 3;
+    margin-top: 1;
+}
+
+#toolbar Input {
+    width: 1fr;
+}
+
+#toolbar Button {
+    margin-left: 1;
+    min-width: 22;
+}
+
+#targets {
+    height: 1fr;
+    border: solid #1b2b3a;
+    background: #080c12;
+}
+
+#detail-wrap {
+    height: 9;
+    border: solid #1b2b3a;
+    background: #0b131c;
+    padding: 0 1;
+    margin-top: 1;
+}
+
+#detail {
+    height: auto;
+}
+
+#activity {
+    height: 1;
+    color: #5f7387;
+}
+
+Button {
+    background: #16232f;
+    color: #cfe0ee;
+    border: none;
+    height: 2;
+}
+
+Button:hover {
+    background: #1e3040;
+}
+
+Button.-primary {
+    background: #0f6f8f;
+    color: #ffffff;
+}
+
+Button.-primary:hover {
+    background: #1388ad;
+}
+
+Button.-success {
+    background: #16794b;
+    color: #ffffff;
+}
+
+Button.-success:hover {
+    background: #1c9a5f;
+}
+
+Button.-warning {
+    background: #8a6417;
+    color: #ffffff;
+}
+
+Button.-error {
+    background: #8f2434;
+    color: #ffffff;
+}
+
+Button:disabled {
+    background: #101923;
+    color: #425466;
+}
+
+#sidebar Button {
+    width: 100%;
+    margin-top: 1;
+}
+
+Input {
+    background: #0f1a24;
+    border: none;
+    color: #e6f0fa;
+}
+
+Input:focus {
+    background: #13222e;
+    border: tall #2b93b5;
+}
+
+Select {
+    background: #0f1a24;
+    border: none;
+}
+
+Select:focus {
+    border: tall #2b93b5;
+}
+
+Checkbox {
+    background: transparent;
+}
+
+DataTable {
+    background: #080c12;
+}
+
+DataTable > .datatable--header {
+    background: #0d1620;
+    color: #7ee7ff;
+    text-style: bold;
+}
+
+DataTable > .datatable--cursor {
+    background: #143445;
+    color: #ffffff;
+}
+
+DataTable > .datatable--even-row {
+    background: #0a1119;
+}
+
+DataTable > .datatable--odd-row {
+    background: #080c12;
+}
+
+ModalScreen {
+    align: center middle;
+    background: #000000 70%;
+}
+
+#confirm-dialog,
+#input-dialog {
+    width: 66;
+    height: auto;
+    background: #0e1822;
+    border: thick #2b93b5;
+    padding: 1 2;
+}
+
+#confirm-label,
+#input-label {
+    color: #d6e2ef;
+    height: auto;
+    margin-bottom: 1;
+}
+
+#details-dialog {
+    width: 84;
+    height: auto;
+    max-height: 90%;
+    background: #0e1822;
+    border: thick #2b93b5;
+    padding: 1 2;
+}
+
+#details-text {
+    height: auto;
+    margin-bottom: 1;
+}
+
+#details-clients {
+    height: auto;
+    max-height: 14;
+    border: solid #1b2b3a;
+    margin-top: 1;
+}
+
+#details-close {
+    width: 20;
+    margin-top: 1;
+}
+
+#help-dialog {
+    width: 88;
+    height: auto;
+    max-height: 90%;
+    background: #0e1822;
+    border: thick #2b93b5;
+    padding: 1 2;
+}
+
+#help-text {
+    height: auto;
+}
+
+#help-close {
+    width: 20;
+    margin-top: 1;
+}
+
+.dialog-buttons {
+    height: auto;
+    align-horizontal: right;
+    margin-top: 1;
+}
+
+.dialog-buttons Button {
+    margin-left: 1;
+    min-width: 14;
+}
+
+#attack-wrap {
+    height: 1fr;
+    padding: 0 1;
+}
+
+#attack-head {
+    height: 8;
+    border: solid #1b2b3a;
+    background: #0b131c;
+    padding: 0 1;
+    margin-bottom: 1;
+}
+
+#attack-title {
+    color: #7ee7ff;
+    text-style: bold;
+    height: 1;
+}
+
+#attack-subtitle {
+    color: #7890a6;
+    height: 1;
+}
+
+#attack-progress {
+    height: 1;
+    margin-top: 1;
+}
+
+#attack-middle {
+    height: 1fr;
+}
+
+#attack-targets-wrap {
+    width: 2fr;
+    border: solid #1b2b3a;
+    background: #0b131c;
+    padding: 0 1;
+    margin-right: 1;
+}
+
+#attack-targets {
+    height: 1fr;
+}
+
+#attack-log-wrap {
+    width: 3fr;
+    border: solid #1b2b3a;
+    background: #080c12;
+    padding: 0 1;
+}
+
+#attack-log {
+    height: 1fr;
+}
+
+#doctor-wrap {
+    height: 1fr;
+    padding: 1 2;
+}
+
+#doctor-title {
+    color: #7ee7ff;
+    text-style: bold;
+    height: 2;
+}
+
+#doctor-summary {
+    height: auto;
+    min-height: 2;
+    color: #9fb2c5;
+    margin-bottom: 1;
+}
+
+#doctor-table {
+    height: 1fr;
+    border: solid #1b2b3a;
+}

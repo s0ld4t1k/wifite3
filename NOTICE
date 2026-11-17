@@ -1,0 +1,29 @@
+Wifite3 is a derivative work of Wifite2.
+
+Wifite2
+  https://github.com/kimocoder/wifite2
+  Copyright (c) 2006-2026 Wifite2 contributors
+  Original Wifite by derv82, maintained by kimocoder and contributors.
+  Licensed under the GNU General Public License v2.0 (GPL-2.0-only).
+
+Wifite3
+  Copyright (c) 2026 Wifite3 contributors.
+  The attack engine in wifite3/ (config, model, attack, tools, util, native,
+  ui, wifite.py and bundled data) is copied from Wifite2 and remains under
+  GPL-2.0-only. The new Textual interface (wifite3/tui, wifite3/cli.py,
+  wifite3/bridge.py, wifite3/system.py, wifite3/doctor.py) is distributed
+  under the same license to keep the combined work compatible.
+
+Bundled data:
+  - wifite3/data/ieee-oui.txt: IEEE OUI registry snapshot, used for vendor
+    lookup. Generated from publicly published IEEE CSV files.
+  - wifite3/data/wordlists/wordlist-probable.txt: copied from Wifite2's
+    wordlists/ directory.
+
+This program is free software; you can redistribute it and/or modify it under
+the terms of the GNU General Public License as published by the Free Software
+Foundation; version 2 of the License.
+
+This program is distributed in the hope that it will be useful, but WITHOUT
+ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
