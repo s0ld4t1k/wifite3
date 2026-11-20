@@ -1,32 +1,32 @@
-/* Wifite3 — dark terminal theme */
+/* Wifite3 — terminal palette inspired by the classic Wifite2 output */
 
 Screen {
-    background: #080c12;
-    color: #d6e2ef;
+    background: ansi_default;
+    color: ansi_default;
 }
 
 Header {
-    background: #0d1620;
-    color: #7ee7ff;
+    background: ansi_default;
+    color: ansi_cyan;
     text-style: bold;
 }
 
 Header > .header--title {
-    color: #7ee7ff;
+    color: ansi_cyan;
 }
 
 Footer {
-    background: #0d1620;
-    color: #7f93a8;
+    background: ansi_default;
+    color: ansi_bright_black;
 }
 
 Footer > .footer--key {
-    background: #13202d;
-    color: #8be9fd;
+    background: ansi_black;
+    color: ansi_cyan;
 }
 
 Footer > .footer--description {
-    color: #9fb2c5;
+    color: ansi_bright_white;
 }
 
 #body {
@@ -38,8 +38,8 @@ Footer > .footer--description {
     min-width: 32;
     max-width: 44;
     height: 1fr;
-    background: #0b131c;
-    border-right: solid #1b2b3a;
+    background: ansi_default;
+    border-right: solid ansi_bright_black;
     padding: 0 1;
 }
 
@@ -51,26 +51,26 @@ Footer > .footer--description {
 #sidebar-actions {
     height: auto;
     dock: bottom;
-    background: #0b131c;
-    border-top: solid #1b2b3a;
+    background: ansi_default;
+    border-top: solid ansi_bright_black;
     padding-top: 1;
 }
 
 #logo {
-    color: #7ee7ff;
+    color: ansi_cyan;
     text-style: bold;
     padding-top: 1;
     height: 2;
 }
 
 #tagline {
-    color: #54687c;
+    color: ansi_bright_black;
     height: 2;
     margin-bottom: 1;
 }
 
 .section-title {
-    color: #4db6d6;
+    color: ansi_cyan;
     text-style: bold;
     margin-top: 1;
     margin-bottom: 0;
@@ -78,29 +78,29 @@ Footer > .footer--description {
 }
 
 .field-label {
-    color: #7890a6;
+    color: ansi_bright_black;
     margin-top: 1;
     height: 1;
 }
 
 .hint {
-    color: #5f7387;
+    color: ansi_bright_black;
     height: auto;
     margin-bottom: 1;
 }
 
 #adapter-info {
-    color: #9fb2c5;
+    color: ansi_bright_white;
     height: auto;
     padding: 1 0;
 }
 
 #status {
-    color: #7890a6;
+    color: ansi_bright_black;
     height: auto;
     min-height: 2;
     padding-top: 1;
-    border-top: dashed #1b2b3a;
+    border-top: dashed ansi_bright_black;
     margin-top: 1;
 }
 
@@ -112,10 +112,10 @@ Footer > .footer--description {
 
 #stats {
     height: 3;
-    background: #0d1620;
-    color: #d6e2ef;
+    background: ansi_default;
+    color: ansi_default;
     padding: 0 1;
-    border: solid #1b2b3a;
+    border: solid ansi_bright_black;
     margin-bottom: 0;
 }
 
@@ -135,14 +135,14 @@ Footer > .footer--description {
 
 #targets {
     height: 1fr;
-    border: solid #1b2b3a;
-    background: #080c12;
+    border: solid ansi_bright_black;
+    background: ansi_default;
 }
 
 #detail-wrap {
     height: 9;
-    border: solid #1b2b3a;
-    background: #0b131c;
+    border: solid ansi_bright_black;
+    background: ansi_default;
     padding: 0 1;
     margin-top: 1;
 }
@@ -153,51 +153,51 @@ Footer > .footer--description {
 
 #activity {
     height: 1;
-    color: #5f7387;
+    color: ansi_bright_black;
 }
 
 Button {
-    background: #16232f;
-    color: #cfe0ee;
+    background: ansi_black;
+    color: ansi_default;
     border: none;
     height: 2;
 }
 
 Button:hover {
-    background: #1e3040;
+    background: ansi_bright_black;
 }
 
 Button.-primary {
-    background: #0f6f8f;
-    color: #ffffff;
+    background: ansi_blue;
+    color: ansi_bright_white;
 }
 
 Button.-primary:hover {
-    background: #1388ad;
+    background: ansi_bright_blue;
 }
 
 Button.-success {
-    background: #16794b;
-    color: #ffffff;
+    background: ansi_green;
+    color: ansi_bright_white;
 }
 
 Button.-success:hover {
-    background: #1c9a5f;
+    background: ansi_bright_green;
 }
 
 Button.-warning {
-    background: #8a6417;
-    color: #ffffff;
+    background: ansi_yellow;
+    color: ansi_bright_white;
 }
 
 Button.-error {
-    background: #8f2434;
-    color: #ffffff;
+    background: ansi_red;
+    color: ansi_bright_white;
 }
 
 Button:disabled {
-    background: #101923;
-    color: #425466;
+    background: ansi_black;
+    color: ansi_bright_black;
 }
 
 #sidebar Button {
@@ -206,23 +206,23 @@ Button:disabled {
 }
 
 Input {
-    background: #0f1a24;
+    background: ansi_default;
     border: none;
-    color: #e6f0fa;
+    color: ansi_default;
 }
 
 Input:focus {
-    background: #13222e;
-    border: tall #2b93b5;
+    background: ansi_black;
+    border: tall ansi_cyan;
 }
 
 Select {
-    background: #0f1a24;
+    background: ansi_default;
     border: none;
 }
 
 Select:focus {
-    border: tall #2b93b5;
+    border: tall ansi_cyan;
 }
 
 Checkbox {
@@ -230,26 +230,26 @@ Checkbox {
 }
 
 DataTable {
-    background: #080c12;
+    background: ansi_default;
 }
 
 DataTable > .datatable--header {
-    background: #0d1620;
-    color: #7ee7ff;
+    background: ansi_default;
+    color: ansi_cyan;
     text-style: bold;
 }
 
 DataTable > .datatable--cursor {
-    background: #143445;
-    color: #ffffff;
+    background: ansi_blue;
+    color: ansi_bright_white;
 }
 
 DataTable > .datatable--even-row {
-    background: #0a1119;
+    background: ansi_default;
 }
 
 DataTable > .datatable--odd-row {
-    background: #080c12;
+    background: ansi_default;
 }
 
 ModalScreen {
@@ -261,14 +261,14 @@ ModalScreen {
 #input-dialog {
     width: 66;
     height: auto;
-    background: #0e1822;
-    border: thick #2b93b5;
+    background: ansi_default;
+    border: thick ansi_cyan;
     padding: 1 2;
 }
 
 #confirm-label,
 #input-label {
-    color: #d6e2ef;
+    color: ansi_default;
     height: auto;
     margin-bottom: 1;
 }
@@ -277,8 +277,8 @@ ModalScreen {
     width: 84;
     height: auto;
     max-height: 90%;
-    background: #0e1822;
-    border: thick #2b93b5;
+    background: ansi_default;
+    border: thick ansi_cyan;
     padding: 1 2;
 }
 
@@ -290,7 +290,7 @@ ModalScreen {
 #details-clients {
     height: auto;
     max-height: 14;
-    border: solid #1b2b3a;
+    border: solid ansi_bright_black;
     margin-top: 1;
 }
 
@@ -303,8 +303,8 @@ ModalScreen {
     width: 88;
     height: auto;
     max-height: 90%;
-    background: #0e1822;
-    border: thick #2b93b5;
+    background: ansi_default;
+    border: thick ansi_cyan;
     padding: 1 2;
 }
 
@@ -335,20 +335,20 @@ ModalScreen {
 
 #attack-head {
     height: 8;
-    border: solid #1b2b3a;
-    background: #0b131c;
+    border: solid ansi_bright_black;
+    background: ansi_default;
     padding: 0 1;
     margin-bottom: 1;
 }
 
 #attack-title {
-    color: #7ee7ff;
+    color: ansi_cyan;
     text-style: bold;
     height: 1;
 }
 
 #attack-subtitle {
-    color: #7890a6;
+    color: ansi_bright_black;
     height: 1;
 }
 
@@ -363,8 +363,8 @@ ModalScreen {
 
 #attack-targets-wrap {
     width: 2fr;
-    border: solid #1b2b3a;
-    background: #0b131c;
+    border: solid ansi_bright_black;
+    background: ansi_default;
     padding: 0 1;
     margin-right: 1;
 }
@@ -375,8 +375,8 @@ ModalScreen {
 
 #attack-log-wrap {
     width: 3fr;
-    border: solid #1b2b3a;
-    background: #080c12;
+    border: solid ansi_bright_black;
+    background: ansi_default;
     padding: 0 1;
 }
 
@@ -390,7 +390,7 @@ ModalScreen {
 }
 
 #doctor-title {
-    color: #7ee7ff;
+    color: ansi_cyan;
     text-style: bold;
     height: 2;
 }
@@ -398,11 +398,11 @@ ModalScreen {
 #doctor-summary {
     height: auto;
     min-height: 2;
-    color: #9fb2c5;
+    color: ansi_bright_white;
     margin-bottom: 1;
 }
 
 #doctor-table {
     height: 1fr;
-    border: solid #1b2b3a;
+    border: solid ansi_bright_black;
 }

@@ -46,38 +46,110 @@ WEP, OWE, Evil Twin, dual-interface), снаружи — удобный инте
 - **`--demo`** — интерфейс и симуляция без Wi-Fi-карты; работает также на macOS.
 - **`--classic`** — классический консольный режим Wifite2 со старыми флагами.
 
-## Быстрый старт (Fedora)
+## Установка в Linux
+
+### Рекомендуемый способ — установщик
+
+Один и тот же установщик подходит для Fedora, Ubuntu, Debian, Kali, Linux Mint,
+Arch, Manjaro, EndeavourOS, openSUSE и Alpine. Он определяет семейство
+дистрибутива, ставит доступные системные инструменты и устанавливает Wifite3
+в root-owned окружение `/opt/wifite3/venv` (не затрагивая системный Python).
+
+Сначала убедитесь, что установлен Python 3.10 или новее, затем выполните:
 
 ```bash
 git clone https://github.com/s0ld4t1k/wifite3.git
 cd wifite3
 ./install.sh
 
-sudo wifite3            # TUI
-wifite3 --demo          # посмотреть интерфейс без карты
-sudo wifite3 --doctor   # готовность Linux (на macOS — только диагностика)
+sudo wifite3            # запустить TUI
+wifite3 --demo          # попробовать интерфейс без Wi-Fi-адаптера
+sudo wifite3 --doctor   # проверить готовность Linux и адаптеров
 ```
 
-Установщик помещает приложение в `/opt/wifite3/venv` и создаёт
-`/usr/local/bin/wifite3`. Окружение принадлежит root, поэтому пользователь
-не сможет подменить код, который затем запускается через `sudo`.
+Установщик запросит `sudo` для системной установки, если он запущен не от root.
+Опциональные инструменты для отдельных режимов (например, WPS, Evil Twin и
+cracking) могут отсутствовать в репозиториях конкретного дистрибутива; в таком
+случае установщик предупредит, а `--doctor` покажет, какие команды доступны.
 
-### Установка вручную на Fedora
+### Установка системных зависимостей вручную
+
+Если не хотите, чтобы установщик ставил системные пакеты, установите основной
+toolchain командой для своего дистрибутива, затем выполните `./install.sh --no-deps`
+для установки приложения в `/opt/wifite3`.
+
+**Fedora / RHEL / CentOS:**
 
 ```bash
-sudo dnf install -y aircrack-ng iw iproute wireless-regdb \
+sudo dnf install -y python3 aircrack-ng iw iproute wireless-regdb \
   usbutils pciutils rfkill wpa_supplicant
-sudo dnf install -y hashcat hcxdumptool hcxtools wireshark-cli \
-  macchanger hostapd dnsmasq john cowpatty || true
-# reaver/bully для WPS могут находиться в RPM Fusion
-
-python3 -m venv .venv
-.venv/bin/pip install -e '.[dev]'
-.venv/bin/wifite3 --demo
 ```
 
-Ручное venv предназначено для разработки и demo. Для реальной работы под root
-предпочтительно использовать `./install.sh`, который ставит код в `/opt`.
+**Ubuntu / Debian / Kali / Linux Mint** (включая другие Debian-based системы):
+
+```bash
+sudo apt update
+sudo apt install -y python3 python3-venv aircrack-ng iw iproute2 \
+  wireless-regdb usbutils pciutils rfkill wpasupplicant
+```
+
+**Arch Linux / Manjaro / EndeavourOS:**
+
+```bash
+sudo pacman -Syu --needed python aircrack-ng iw iproute2 wireless-regdb \
+  usbutils pciutils rfkill wpa_supplicant
+```
+
+**openSUSE:**
+
+```bash
+sudo zypper refresh
+sudo zypper install -y python3 python3-pip aircrack-ng iw iproute2 \
+  wireless-regdb usbutils pciutils rfkill wpa_supplicant
+```
+
+**Alpine Linux:**
+
+```bash
+sudo apk update
+sudo apk add python3 py3-pip aircrack-ng iw iproute2 wireless-regdb \
+  usbutils pciutils rfkill wpa_supplicant
+```
+
+Затем из папки репозитория:
+
+```bash
+./install.sh --no-deps
+sudo wifite3
+```
+
+Некоторые необязательные пакеты имеют другие имена или не входят в основные
+репозитории. Для WPS, PMKID, Evil Twin и cracking инструменты устанавливаются
+по мере необходимости; проверьте доступность через `sudo wifite3 --doctor`.
+Не запускайте `sudo pip install` в системный Python (PEP 668).
+
+### Разработка и запуск demo
+
+На Linux можно создать редактируемое dev-окружение:
+
+```bash
+./install.sh --dev
+.venv/bin/wifite3 --demo
+.venv/bin/pytest
+```
+
+На macOS `install.sh` не используется — он предназначен для установки Linux-
+зависимостей. Для разработки создайте venv напрямую:
+
+```bash
+python3 -m venv .venv
+.venv/bin/python -m pip install -e '.[dev]'
+.venv/bin/wifite3 --demo
+.venv/bin/pytest
+```
+
+Demo не требует root или Wi-Fi-адаптера. Реальное сканирование доступно только
+на Linux с подходящим адаптером.
 
 ## Управление
 
@@ -97,23 +169,11 @@ python3 -m venv .venv
 Клик по заголовку колонки — сортировка. В экране атаки `s` — остановить,
 `esc` — назад (с подтверждением).
 
-## Установка на другие дистрибутивы
+## Особенности установки
 
-```bash
-# Debian / Ubuntu / Kali / Arch / Manjaro / openSUSE / Alpine
-./install.sh
-```
-
-Пакет `reaver`, `bully`, `bettercap` и некоторые WPS-инструменты могут
-отсутствовать в официальных репозиториях. Сканирование и остальные режимы
-при этом не обязательно блокируются; `--doctor` покажет недостающие команды.
-
-## Почему установка проще, чем у Wifite2
-
-Типичные грабли Fedora:
-
-1. **PEP 668** — системный Python не используется для установки приложения.
-   Wifite3 ставится в изолированный `/opt/wifite3/venv`, зависимости — через `dnf`.
+1. **Безопасно для PEP 668** — системный Python не используется для установки
+   приложения. Wifite3 устанавливается в изолированный `/opt/wifite3/venv`;
+   системные Wi-Fi-инструменты устанавливаются пакетным менеджером дистрибутива.
 2. **Имя пакета** — Python-пакет называется `wifite3`, поэтому не конфликтует
    с установленным `wifite2`.
 3. **Системные инструменты** — `install.sh` ставит основной toolchain, а
