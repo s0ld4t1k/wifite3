@@ -64,6 +64,9 @@ class Airmon(Dependency):
     base_interface = None
     killed_network_manager = False
     use_ipiw = False
+    # monitor interface -> 'airmon' | 'ipiw', so stop() tears it down the
+    # same way it was created even when a run mixes both paths.
+    monitor_methods = {}
 
     # see if_arp.h
     ARPHRD_ETHER = 1  # managed
@@ -166,6 +169,14 @@ class Airmon(Dependency):
             Color.pl('{!} {O}Failed to put %s into monitor mode{W}' % interface)
             return None
 
+        # airodump-ng only captures on an administratively up interface.
+        # set_interface_mode() preserves the previous up state, so an
+        # interface that started down would otherwise stay down and capture
+        # nothing.
+        if not manager.set_interface_up(interface, True):
+            Color.pl('{!} {O}Failed to bring %s up{W}' % interface)
+            return None
+
         # Give the interface a moment to come up
         time.sleep(0.5)
 
@@ -220,8 +231,12 @@ class Airmon(Dependency):
             iface_name = interface
             driver = None # We'll try to fetch this if needed
 
-        # Remember this as the 'base' interface.
-        Airmon.base_interface = iface_name
+        # Remember this as the 'base' interface, but never overwrite it with
+        # an already-armed monitor VIF: callers such as the WPA attack code
+        # re-run start() on Configuration.interface (e.g. wlan0mon), and
+        # cleanup must still restore the original managed netdev.
+        if not Iw.is_monitor(iface_name):
+            Airmon.base_interface = iface_name
 
         if driver is None:
             iface_obj = Airmon.get_iface_info(iface_name)
@@ -277,6 +292,7 @@ class Airmon(Dependency):
                         if Iw.is_monitor(iface_name):
                             Color.pl('{G}enabled (ICNSS2 specific)!{W}')
                             cls.use_ipiw = True
+                            cls.monitor_methods[iface_name] = 'ipiw'
                             return iface_name
                         else:
                             Color.pl('{O}failed (ICNSS2 specific, could not verify monitor mode). Trying other methods...{W}')
@@ -293,9 +309,31 @@ class Airmon(Dependency):
                     Color.pl('{O}con_mode path not found for ICNSS2. Trying other methods...{W}')
 
 
-        # Always use ip/iw method for better compatibility
-        # This works for all drivers and is compatible with hcxdumptool (used for WPA3/PMKID)
-        # airmon-ng creates interfaces that hcxdumptool doesn't work well with
+        # Prefer airmon-ng, matching wifite2. airmon-ng creates a dedicated
+        # monitor VIF (e.g. wlan0mon) and leaves the managed interface in
+        # place, so NetworkManager cannot flip the capture interface back to
+        # managed mode. Retyping the managed interface with ip/iw drops the
+        # connection, and NetworkManager often re-asserts managed mode, which
+        # leaves airodump-ng capturing nothing.
+        #
+        # hcxdumptool 7+ owns the radio itself and does not work well with the
+        # VIF airmon-ng creates, so keep the direct ip/iw path for it.
+        if not Configuration.hcxdumptool_owns_radio() and Process.exists('airmon-ng'):
+            Color.p('{+} Enabling {G}monitor mode{W} on {C}%s{W}... ' % iface_name)
+            airmon_output = Process(['airmon-ng', 'start', iface_name]).stdout()
+            log_debug('Airmon', 'airmon-ng start output: %s' % airmon_output.strip())
+            enabled_interface = Airmon._parse_airmon_start(airmon_output, iface_name)
+
+            if enabled_interface and Iw.is_monitor(enabled_interface):
+                cls.use_ipiw = False
+                cls.monitor_methods[enabled_interface] = 'airmon'
+                Color.pl('{G}enabled {C}%s{W}!' % enabled_interface)
+                return enabled_interface
+
+            Color.pl('{O}airmon-ng could not enable monitor mode, trying ip/iw{W}')
+
+        # Fallback: drive the interface directly. This is also the path used
+        # when hcxdumptool owns the radio.
         Color.p('{+} Enabling {G}monitor mode{W} on {C}%s{W}... ' % iface_name)
 
         enabled_interface = Airmon.start_monitor(iface_name)
@@ -311,6 +349,7 @@ class Airmon(Dependency):
             Color.pl('{R}interface %s not in monitor mode after ip/iw.{W}' % enabled_interface)
             raise Exception(f'Interface {enabled_interface} not in monitor mode after ip/iw')
 
+        cls.monitor_methods[enabled_interface] = 'ipiw'
 
         # No errors found; the device 'enabled_iface' was put into Mode:Monitor.
         Color.pl('{G}enabled{W}!')
@@ -318,23 +357,46 @@ class Airmon(Dependency):
         return enabled_interface
 
     @staticmethod
-    def _parse_airmon_start(airmon_output):
-        """Find the interface put into monitor mode (if any)"""
-        # airmon-ng output examples:
-        # (mac80211 monitor mode vif enabled for [phy10]wlan0 on [phy10]wlan0mon)
-        # (mac80211 monitor mode already enabled for [phy0]wlxd037456283c3 on [phy0]10)
-        # (mac80211 monitor mode vif enabled for [phy5]wlxd037456283c3 on [phy5]wlxd037456283c3mon)
+    def _parse_airmon_start(airmon_output, iface_name=None):
+        """Find the interface put into monitor mode (if any).
 
-        # Try to match from the "on" part first - this is the actual monitor interface
-        # Updated regex to handle interface names that may contain numbers at the start
+        airmon-ng has several success formats.  On drivers that cannot host a
+        second VIF (most Intel iwlwifi cards report "interface combinations
+        are not supported"), it retypes the original netdev itself and prints
+        just ``(monitor mode enabled)`` with no interface name at all.  In that
+        case the monitor interface *is* ``iface_name``; callers pass it in so
+        we do not mistake a successful run for a failure and fall back to
+        ip/iw.
+        """
+        # Dedicated monitor VIF:
+        #   (mac80211 monitor mode vif enabled for [phy10]wlan0 on [phy10]wlan0mon)
+        #   (mac80211 monitor mode vif enabled on [phy10]wlan0mon)   <- findFreeInterface
+        #   (mac80211 monitor mode already enabled for [phy0]wlan0 on [phy0]wlan0mon)
+        # Try to match from the "on" part first - this is the actual monitor interface.
+        # Updated regex to handle interface names that may contain numbers at the start.
         enabled_on_re = re.compile(r'.*\(mac80211 monitor mode (?:(?:vif )?enabled|already enabled) (?:for [^ ]+ )?on (?:\[\w+])?([a-zA-Z][\w-]+(?:mon)?)\)?.*')
 
         # Fallback: try to match from the "for" part if "on" part is just numbers (channel)
         enabled_for_re = re.compile(r'.*\(mac80211 monitor mode (?:(?:vif )?enabled|already enabled) for (?:\[\w+])?(\w+).*on (?:\[\w+])?\d+\)?.*')
+
+        # The interface itself was retyped (no VIF).  Deprecated wireless-tools
+        # path prints the name in the message; the mac80211 one does not.
+        already_retyped_re = re.compile(r'\(Monitor mode already enabled for \[?\w+\]?([\w-]+)\)')
+        retyped_re = re.compile(r'\(monitor mode enabled\)')
+
         lines = airmon_output.split('\n')
 
-        for index, line in enumerate(lines):
+        for line in lines:
             if 'mac80211 monitor mode' not in line:
+                # Success messages that name no VIF mean the original netdev
+                # was switched to monitor mode in place.
+                if iface_name and retyped_re.search(line):
+                    log_debug('Airmon', f'airmon-ng retyped {iface_name} in place')
+                    return iface_name
+                if matches := already_retyped_re.search(line):
+                    result = matches.group(1)
+                    log_debug('Airmon', f'already-retyped interface: {repr(result)}')
+                    return result
                 continue
 
             log_debug('Airmon', f'Parsing line: {repr(line)}')
@@ -348,11 +410,6 @@ class Airmon(Dependency):
             elif matches := enabled_for_re.match(line):
                 result = matches.group(1)
                 log_debug('Airmon', f'enabled_for_re matched: {repr(result)}')
-                return result
-            # Legacy fallback
-            elif "monitor mode enabled" in line:
-                result = line.split()[-1]
-                log_debug('Airmon', f'legacy fallback matched: {repr(result)}')
                 return result
             else:
                 log_debug('Airmon', 'No regex matched this line')
@@ -373,11 +430,39 @@ class Airmon(Dependency):
                 Color.pl('{!} {O}Could not disable Nexmon monitor mode on {R}%s{W}' % interface)
             return interface, interface
 
-        if cls.use_ipiw:
-            enabled_interface = disabled_interface = Airmon.stop_monitor(interface)
-        else:
+        method = cls.monitor_methods.get(interface)
+        if method is None:
+            method = 'ipiw' if cls.use_ipiw else 'airmon'
+
+        disabled_interface = enabled_interface = None
+        if method == 'airmon' and Process.exists('airmon-ng'):
             airmon_output = Process(['airmon-ng', 'stop', interface]).stdout()
+            log_debug('Airmon', 'airmon-ng stop output: %s' % airmon_output.strip())
             disabled_interface, enabled_interface = Airmon._parse_airmon_stop(airmon_output)
+
+            # airmon-ng 1.7 removes the VIF and prints only
+            # "(monitor mode disabled)"; the older formats name the interface.
+            # The station VIF may also already exist, in which case only
+            # "(mac80211 station mode vif already available ...)" is printed.
+            if disabled_interface is None and (
+                    'monitor mode disabled' in airmon_output
+                    or 'station mode vif already available' in airmon_output
+                    or '(removed)' in airmon_output):
+                disabled_interface = interface
+                if enabled_interface is None:
+                    enabled_interface = Airmon.base_interface
+
+            if disabled_interface is None:
+                # airmon-ng did not recognise the interface (mixed ip/iw run);
+                # fall back to the direct path rather than leaving it armed.
+                log_debug('Airmon',
+                          'airmon-ng did not stop %s, falling back to ip/iw' % interface)
+                method = 'ipiw'
+
+        if method == 'ipiw':
+            enabled_interface = disabled_interface = Airmon.stop_monitor(interface)
+
+        cls.monitor_methods.pop(interface, None)
 
         if disabled_interface:
             Color.pl('{+}{W} Disabled monitor mode on {G}%s{W}' % disabled_interface)

@@ -271,6 +271,14 @@ class Configuration:
             from ..tools.airmon import Airmon
             from ..tools.iw import Iw
             Airmon.require_interface(cls.interface)
+
+            # Airmon.ask() checks for interfering processes before enabling
+            # monitor mode; the -i path bypasses ask(), so run the same check
+            # here. It warns unless --kill (or the TUI option) is enabled.
+            from ..util.process import Process
+            if Process.exists('airmon-ng'):
+                Airmon.terminate_conflicting_processes()
+
             iface_info = Airmon.get_iface_info(cls.interface)
             if iface_info and iface_info.driver == 'brcmfmac':
                 from ..tools.nexmon import Nexmon
